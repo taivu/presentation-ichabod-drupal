@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>reveal.js</title>
+
+		<link rel="stylesheet" href="css/reset.css">
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/black.css">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/monokai.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+        <h1>Ichabod Drupal</h1>
+        <p>Headless Drupal using REST exports with authentication</p>
+
+          <!-- <code class="fragment">tai.endJoke();</code> -->
+        </section>
+
+        <section>
+          <h2>We need Data!</h2>
+          <p class="fragment">What do we need?</p>
+          <p class="fragment">- Flexibility</p>
+          <p class="fragment">- Ease of Data Maintenance</p>
+          <p class="fragment">So we used Views's REST Export</p>
+        </section>
+
+        <section>
+          <h2>View Setup: Displays</h2>
+          <p class="fragment">- Need Multiple Displays</p>
+        </section>
+
+        <!-- <section>
+          <h2>Issues Using Views Data Export</h2>
+          <p class="fragment">- views references return an array of `nid`'s.</p>
+          <p class="fragment">- we wanted fully fleshed out collections of data.</p>
+          <p class="fragment">- `views_field_formatter`</p>
+          <p class="fragment">- known issue: data collections will be strigified.</p>
+          <p class="fragment">- `JSON.parse()`</p>
+        </section> -->
+
+        <section>
+          <section>
+            <h2>View Setup: Views Field Formatter</h2>
+            <p class="fragment">Example Taxonomy Reference: Product Type</p>
+          </section>
+
+          <section>
+            <p class="fragment">Taxonomy View: Export Display for Product Type</p>
+            <img class="fragment" src="./img/views-format-1.png" alt="">
+          </section>
+
+          <section>
+            <p class="fragment">Taxonomy View (Continued): Contextual Filter</p>
+            <img class="fragment" src="./img/views-format-4.png" alt="">
+          </section>
+
+          <section>
+            <p class="fragment">Taxonomy View (Continued): Allow multiples</p>
+            <img class="fragment" src="./img/views-format-5.png" alt="" style="max-width: 50%">
+            <p class="fragment">Notice the delimiters: plus (+) or commas (,)</p>
+          </section>
+
+          <section>
+            <p class="fragment">Product View: Configure Product Type Field</p>
+            <img class="fragment" src="./img/views-format-2.png" alt="" style="max-width: 50%">
+          </section>
+
+          <section>
+            <p class="fragment">Continued Product Type Setup: Multiple</p>
+            <p class="fragment">Remember 'allow multiples' for Taxonomy? </p>
+            <img class="fragment" src="./img/views-format-3.png" alt="">
+          </section>
+
+        </section>
+
+        <section>
+          <section>
+          <h2>Result?</h2>
+          <pre class="fragment"><code class="hljs json">
+[
+  {
+    "title": "All Eyez on Me",
+    "nid": "80",
+    "field_product_type": "[{\"tid\":\"79\",\"name\":\"Digital\",\"weight\":\"1\"},{\"tid\":\"78\",\"name\":\"Streaming\",\"weight\":\"0\"}]",
+    "field_sort_weight": "3",
+  },
+  {
+    "title": "All Eyez on Me",
+    "nid": "6",
+    "field_product_type": "[{\"tid\":\"80\",\"name\":\"Physical\",\"weight\":\"2\"}]",
+    "field_sort_weight": "4",
+  }
+]
+            </code></pre>
+          </section>
+
+          <section>
+            <h2>field_product_type: After JSON.parse()</h2>
+            <pre class="fragment"><code class="hljs json">
+[
+  {
+    "tid": "79",
+    "name": "Digital",
+    "weight": "1"
+  },
+  {
+    "tid": "78",
+    "name": "Streaming",
+    "weight": "0"
+  }
+]
+            </code></pre>
+          </section>
+        </section>
+
+        <section id="view-setup-pt-1">
+          <section>
+            <h2>View Setup: Authentication</h2>
+          </section>
+          <section>
+            <p>Set Up REST Web Services</p>
+            <img class="fragment" src="./img/rest-resource-settings.png" alt="" style="max-width: 69%">
+          </section>
+          <section>
+            <p>Example: Media Entity</p>
+            <img class="fragment" src="./img/rest-resource-settings-media.png" alt="" style="max-width: 69%">
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h2>Configure Simple Oauth</h2>
+          </section>
+          <section>
+            <p>Navigate to `simple_oauth`'s settings page.</p>
+            <img class="fragment" src="./img/simple-oauth-navigation.png" alt="">
+          </section>
+          <section>
+            <img src="./img/simple-oauth-settings.png" alt="" style="max-width: 69%">
+            <p class="fragment">(configured screenshot)</p>
+          </section>
+          <section>
+            <p>Setup a Consumer</p>
+            <img class="fragment" src="./img/add-consumer.png" alt="" style="max-width: 69%">
+          </section>
+
+          <section>
+            <h2>What is a Consumer?</h2>
+            <p class="fragment">- Token to access to exports</p>
+            <p class="fragment">- Uses Roles to scope permissions</p>
+            <img class="fragment" src="./img/views-path-settings-role.png" alt="">
+            <img class="fragment" src="./img/views-path-settings-permission.png" alt="">
+          </section>
+        </section>
+
+				<section>
+          <h2>Lessons Learned</h2>
+          <pre class="fragment"><code class="hljs bash">$ drush cex</code></pre>
+        </section>
+
+				<section>
+          <h2>The End</h2>
+        </section>
+			</div>
+		</div>
+
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info about config & dependencies:
+			// - https://github.com/hakimel/reveal.js#configuration
+			// - https://github.com/hakimel/reveal.js#dependencies
+			Reveal.initialize({
+        center: true,
+        hash: true,
+        transition: 'slide',
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/highlight/highlight.js', async: true }
+				]
+			});
+		</script>
+	</body>
+</html>
